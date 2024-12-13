@@ -1,7 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 export async function login(formData) {
   try {
     const response = await fetch("http://localhost:8080/auth/login", {
@@ -43,11 +41,13 @@ export async function register(formData) {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
       throw new Error("Registration failed");
     }
 
-    redirect("/login");
+    const data = await response.json();
+    return { success: true, data };
   } catch (error) {
-    return { success: false, error: "Registration failed" };
+    return { success: false, error: "Registration failed " + error };
   }
 }

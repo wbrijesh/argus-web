@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Input from "../shared/Input";
 import Button from "../shared/Button";
 import { register } from "@/app/actions/auth";
@@ -10,6 +11,7 @@ export default function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef();
   const passwordRef = useRef();
+  const router = useRouter();
 
   async function handleSubmit(formData) {
     setIsSubmitting(true);
@@ -26,6 +28,8 @@ export default function RegisterForm() {
 
     if (!result?.success && result?.error) {
       setError(result.error);
+    } else {
+      router.push("/login");
     }
 
     setIsSubmitting(false);
@@ -47,7 +51,6 @@ export default function RegisterForm() {
               name="email"
               type="email"
               required
-              pattern="[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i"
               error={error}
             />
 

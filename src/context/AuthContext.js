@@ -13,18 +13,25 @@ export function AuthProvider({ children }) {
   // Function to fetch user data using the token
   const fetchUserData = async (token) => {
     try {
-      const response = await fetch("http://localhost:8080/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        "http://localhost:8080/twirp/auth.AuthService/ValidateToken",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: token,
+          }),
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch user data" + response.statusText);
       }
 
       const userData = await response.json();
-      setUser(userData);
+      setUser(userData.user);
       return userData;
     } catch (error) {
       console.error("Error fetching user data:", error);

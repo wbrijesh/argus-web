@@ -2,16 +2,19 @@
 
 export async function login(formData) {
   try {
-    const response = await fetch("http://localhost:8080/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      "http://localhost:8080/twirp/auth.AuthService/Login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.get("email"),
+          password: formData.get("password"),
+        }),
       },
-      body: JSON.stringify({
-        email: formData.get("email"),
-        password: formData.get("password"),
-      }),
-    });
+    );
 
     if (!response.ok) {
       throw new Error("Login failed");
@@ -23,31 +26,35 @@ export async function login(formData) {
     // as we can't access localStorage from server actions
     return { success: true, data };
   } catch (error) {
+    console.error("Login error:", error);
     return { success: false, error: "Invalid credentials" };
   }
 }
 
 export async function register(formData) {
   try {
-    const response = await fetch("http://localhost:8080/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      "http://localhost:8080/twirp/auth.AuthService/Register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.get("email"),
+          password: formData.get("password"),
+        }),
       },
-      body: JSON.stringify({
-        email: formData.get("email"),
-        password: formData.get("password"),
-      }),
-    });
+    );
 
     if (!response.ok) {
-      const errorText = await response.text();
       throw new Error("Registration failed");
     }
 
     const data = await response.json();
     return { success: true, data };
   } catch (error) {
+    console.error("Registration error:", error);
     return { success: false, error: "Registration failed " + error };
   }
 }

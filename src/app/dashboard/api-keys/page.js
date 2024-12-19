@@ -15,11 +15,14 @@ export default function APIKeysPage() {
 
   async function fetchAPIKeys() {
     try {
-      const response = await fetch("http://localhost:8080/api-keys", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const response = await fetch(
+        "http://localhost:8080/twirp/apikeys.APIKeysService/ListAPIKeys",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-      });
+      );
 
       if (!response.ok) throw new Error("Failed to fetch API keys");
 
@@ -59,12 +62,17 @@ export default function APIKeysPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/api-keys/${keyId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const response = await fetch(
+        `http://localhost:8080/twirp/apikeys.APIKeysService/RevokeAPIKey`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ keyId }),
         },
-      });
+      );
 
       if (!response.ok) throw new Error("Failed to revoke API key");
 
@@ -75,7 +83,7 @@ export default function APIKeysPage() {
     }
   }
 
-  if (!apiKeys) {
+  if (!apiKeys.length) {
     return (
       <div className="rounded-lg bg-white shadow">
         <div className="px-4 py-12 my-0">

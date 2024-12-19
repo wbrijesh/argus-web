@@ -18,14 +18,17 @@ export default function NewAPIKeyPage() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8080/api-keys", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:8080/twirp/apikeys.APIKeysService/CreateAPIKey",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name }),
         },
-        body: JSON.stringify({ name }),
-      });
+      );
 
       if (!response.ok) throw new Error("Failed to create API key");
 

@@ -13,12 +13,19 @@ export default function AuthLayout({ children }) {
         // Check if token exists in localStorage
         const token = localStorage.getItem("token");
         if (token) {
-          // Verify token by making a request to /auth/me
-          const response = await fetch("http://localhost:8080/auth/me", {
-            headers: {
-              Authorization: `Bearer ${token}`,
+          // Verify token by making a request to /twirp/auth.AuthService/ValidateToken
+          const response = await fetch(
+            "http://localhost:8080/twirp/auth.AuthService/ValidateToken",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                token: token,
+              }),
             },
-          });
+          );
 
           if (response.ok) {
             // Token is valid, redirect to dashboard

@@ -77,9 +77,9 @@ export default function DashboardLayout({ children }) {
             <Link href="/dashboard">
               <p className="text-sm text-gray-600 hover:text-gray-800">Home</p>
             </Link>
-            <Link href="/dashboard/api-keys">
+            <Link href="/dashboard/applications">
               <p className="text-sm text-gray-600 hover:text-gray-800">
-                API Keys
+                Applications
               </p>
             </Link>
             <Link href="/dashboard/monitors">

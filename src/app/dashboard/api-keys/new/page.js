@@ -23,19 +23,34 @@ export default function NewAPIKeyPage() {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name }),
+          body: JSON.stringify({
+            token: localStorage.getItem("token"),
+            name: name,
+            expires_at: "", // Optional, you can add a date picker if needed
+          }),
         },
       );
 
-      if (!response.ok) throw new Error("Failed to create API key");
-
       const data = await response.json();
-      setNewKey(data.key);
+
+      // Check for Twirp error response
+      if (data.code || data.msg) {
+        throw new Error(data.msg || "Failed to create API key");
+      }
+
+      if (!data.key) {
+        throw new Error("No API key received");
+      }
+
+      setNewKey({
+        key: data.key,
+        name: data.api_key.name,
+        created_at: data.api_key.created_at,
+      });
     } catch (error) {
-      setError("Failed to create API key");
+      setError(error.message || "Failed to create API key");
       console.error("Error:", error);
     } finally {
       setIsSubmitting(false);
@@ -48,19 +63,22 @@ export default function NewAPIKeyPage() {
         <div className="bg-white shadow rounded-lg p-6">
           <div className="space-y-4">
             <h2 className="text-lg font-medium text-gray-900">
-              API Key Created
+              API Key Created: {newKey.name}
             </h2>
             <p className="text-sm text-gray-500">
               Please copy your API key now. You won't be able to see it again!
             </p>
             <div className="bg-gray-50 p-4 rounded-md">
-              <code className="text-sm break-all">{newKey}</code>
+              <code className="text-sm break-all">{newKey.key}</code>
             </div>
+            <p className="text-xs text-gray-500">
+              Created on: {new Date(newKey.created_at).toLocaleString()}
+            </p>
             <div className="flex justify-end space-x-4">
               <Button
                 variant="secondary"
                 onClick={() => {
-                  navigator.clipboard.writeText(newKey);
+                  navigator.clipboard.writeText(newKey.key);
                 }}
               >
                 Copy to Clipboard

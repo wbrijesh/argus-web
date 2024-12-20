@@ -8,6 +8,7 @@ export default function APIKeysPage() {
   const [apiKeys, setApiKeys] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deletingKeys, setDeletingKeys] = useState(new Set());
 
   useEffect(() => {
     fetchAPIKeys();
@@ -18,16 +19,20 @@ export default function APIKeysPage() {
       const response = await fetch(
         "http://localhost:8080/twirp/apikeys.APIKeysService/ListAPIKeys",
         {
+          method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            token: localStorage.getItem("token"),
+          }),
         },
       );
 
       if (!response.ok) throw new Error("Failed to fetch API keys");
 
       const data = await response.json();
-      setApiKeys(data);
+      setApiKeys(data.api_keys || []);
     } catch (error) {
       setError("Failed to load API keys");
       console.error("Error:", error);
@@ -52,34 +57,44 @@ export default function APIKeysPage() {
     );
   }
 
-  async function handleRevokeKey(keyId) {
+  async function handleDeleteKey(keyId) {
     if (
       !confirm(
-        "Are you sure you want to revoke this API key? This action cannot be undone.",
+        "Are you sure you want to delete this API key? This action cannot be undone.",
       )
     ) {
       return;
     }
 
+    setDeletingKeys((prev) => new Set([...prev, keyId]));
+
     try {
       const response = await fetch(
-        `http://localhost:8080/twirp/apikeys.APIKeysService/RevokeAPIKey`,
+        `http://localhost:8080/twirp/apikeys.APIKeysService/DeleteAPIKey`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ keyId }),
+          body: JSON.stringify({
+            token: localStorage.getItem("token"),
+            key_id: keyId,
+          }),
         },
       );
 
-      if (!response.ok) throw new Error("Failed to revoke API key");
+      if (!response.ok) throw new Error("Failed to delete API key: ", response);
 
       await fetchAPIKeys(); // Refresh the list
     } catch (error) {
-      setError("Failed to revoke API key");
+      setError("Failed to delete API key");
       console.error("Error:", error);
+    } finally {
+      setDeletingKeys((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(keyId);
+        return newSet;
+      });
     }
   }
 
@@ -113,7 +128,8 @@ export default function APIKeysPage() {
             <APIKeyItem
               key={key.id}
               apiKey={key}
-              onRevoke={() => handleRevokeKey(key.id)}
+              onDelete={() => handleDeleteKey(key.id)}
+              isDeleting={deletingKeys.has(key.id)}
             />
           ))}
       </div>
@@ -121,7 +137,7 @@ export default function APIKeysPage() {
   );
 }
 
-function APIKeyItem({ apiKey, onRevoke }) {
+function APIKeyItem({ apiKey, onDelete, isDeleting }) {
   return (
     <div className="px-6 py-4">
       <div className="flex items-center justify-between">
@@ -139,10 +155,11 @@ function APIKeyItem({ apiKey, onRevoke }) {
           )}
         </div>
         <button
-          onClick={onRevoke}
-          className="text-sm text-red-600 hover:text-red-900"
+          onClick={onDelete}
+          disabled={isDeleting}
+          className={`text-sm text-red-600 hover:text-red-900 ${isDeleting ? "opacity-50 cursor-not-allowed" : ""}`}
         >
-          Revoke
+          {isDeleting ? "Deleting..." : "Delete"}
         </button>
       </div>
     </div>

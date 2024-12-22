@@ -1,10 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Button from "@/components/shared/Button";
+import { Terminal, MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function ApplicationsPage() {
+  const router = useRouter();
   const [applications, setApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -41,7 +50,8 @@ export default function ApplicationsPage() {
     }
   }
 
-  async function handleDeleteApplication(appId) {
+  async function handleDeleteApplication(appId, e) {
+    e.stopPropagation();
     if (
       !confirm(
         "Are you sure you want to delete this application? This action cannot be undone and will delete all associated logs.",
@@ -69,7 +79,7 @@ export default function ApplicationsPage() {
 
       if (!response.ok) throw new Error("Failed to delete application");
 
-      await fetchApplications(); // Refresh the list
+      await fetchApplications();
     } catch (error) {
       setError("Failed to delete application");
       console.error("Error:", error);
@@ -121,49 +131,56 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="bg-white shadow rounded-lg divide-y divide-gray-200">
-      {applications.map((app) => (
-        <ApplicationItem
-          key={app.id}
-          application={app}
-          onDelete={() => handleDeleteApplication(app.id)}
-          isDeleting={deletingApps.has(app.id)}
-        />
-      ))}
-    </div>
-  );
-}
+    <div className="mx-auto max-w-7xl">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {applications.map((app) => (
+          <div
+            key={app.id}
+            onClick={() => router.push(`/dashboard/applications/${app.id}`)}
+            className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md cursor-pointer relative"
+          >
+            <div className="absolute top-4 right-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger onClick={(e) => e.stopPropagation()}>
+                  <MoreVertical className="h-5 w-5 text-gray-500" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/dashboard/applications/${app.id}/edit`);
+                    }}
+                  >
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => handleDeleteApplication(app.id, e)}
+                    disabled={deletingApps.has(app.id)}
+                  >
+                    {deletingApps.has(app.id) ? "Deleting..." : "Delete"}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
-function ApplicationItem({ application, onDelete, isDeleting }) {
-  return (
-    <div className="px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h3 className="text-lg font-medium text-gray-900">
-            {application.name}
-          </h3>
-          <p className="text-sm text-gray-500">{application.description}</p>
-          <div className="text-xs text-gray-400">
-            Created on {new Date(application.created_at).toLocaleDateString()}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{app.name}</span>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Description:</span>
+                  <span className="text-right">{app.description}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Created:</span>
+                  <span>{new Date(app.created_at).toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center space-x-4">
-          <Link
-            href={`/dashboard/applications/${application.id}`}
-            className="text-sm text-indigo-600 hover:text-indigo-900"
-          >
-            View Details
-          </Link>
-          <button
-            onClick={onDelete}
-            disabled={isDeleting}
-            className={`text-sm text-red-600 hover:text-red-900 ${
-              isDeleting ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {isDeleting ? "Deleting..." : "Delete"}
-          </button>
-        </div>
+        ))}
       </div>
     </div>
   );

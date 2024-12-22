@@ -82,13 +82,13 @@ export default function DashboardLayout({ children }) {
                 Applications
               </p>
             </Link>
+            <Link href="/dashboard/logs">
+              <p className="text-sm text-gray-600 hover:text-gray-800">Logs</p>
+            </Link>
             <Link href="/dashboard/monitors">
               <p className="text-sm text-gray-600 hover:text-gray-800">
                 Monitors
               </p>
-            </Link>
-            <Link href="/dashboard/logs">
-              <p className="text-sm text-gray-600 hover:text-gray-800">Logs</p>
             </Link>
           </div>
         </div>

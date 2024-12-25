@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
   const fetchUserData = async (token) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/twirp/auth.AuthService/ValidateToken",
+        `https://argus-core.brijesh.dev/twirp/auth.AuthService/ValidateToken`,
         {
           method: "POST",
           headers: {

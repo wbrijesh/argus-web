@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Button from "@/components/shared/Button";
-import { Terminal, MoreVertical } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,7 @@ export default function ApplicationsPage() {
   async function fetchApplications() {
     try {
       const response = await fetch(
-        "http://localhost:8080/twirp/applications.ApplicationsService/ListApplications",
+        `https://argus-core.brijesh.dev/twirp/applications.ApplicationsService/ListApplications`,
         {
           method: "POST",
           headers: {
@@ -64,7 +64,7 @@ export default function ApplicationsPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/twirp/applications.ApplicationsService/DeleteApplication`,
+        `https://argus-core.brijesh.dev/twirp/applications.ApplicationsService/DeleteApplication`,
         {
           method: "POST",
           headers: {

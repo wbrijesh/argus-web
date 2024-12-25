@@ -19,7 +19,7 @@ export default function ApplicationDetailsPage({ params }) {
   async function fetchApplication() {
     try {
       const response = await fetch(
-        "http://localhost:8080/twirp/applications.ApplicationsService/GetApplication",
+        `https://argus-core.brijesh.dev/twirp/applications.ApplicationsService/GetApplication`,
         {
           method: "POST",
           headers: {

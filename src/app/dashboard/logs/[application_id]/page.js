@@ -48,7 +48,7 @@ export default function ApplicationLogsPage() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "http://localhost:8080/twirp/logs.LogsService/GetLogs",
+        `https://argus-core.brijesh.dev/twirp/logs.LogsService/GetLogs`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -90,7 +90,7 @@ export default function ApplicationLogsPage() {
     setIsGeneratingDummy(true);
     try {
       const response = await fetch(
-        "http://localhost:8080/twirp/logs.LogsService/GenerateDummyLogs",
+        `https://argus-core.brijesh.dev/twirp/logs.LogsService/GenerateDummyLogs`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

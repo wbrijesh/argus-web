@@ -15,7 +15,7 @@ export default function AuthLayout({ children }) {
         if (token) {
           // Verify token by making a request to /twirp/auth.AuthService/ValidateToken
           const response = await fetch(
-            "http://localhost:8080/twirp/auth.AuthService/ValidateToken",
+            `https://argus-core.brijesh.dev/twirp/auth.AuthService/ValidateToken`,
             {
               method: "POST",
               headers: {

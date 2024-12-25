@@ -3,7 +3,7 @@
 export async function login(formData) {
   try {
     const response = await fetch(
-      "http://localhost:8080/twirp/auth.AuthService/Login",
+      `https://argus-core.brijesh.dev/twirp/auth.AuthService/Login`,
       {
         method: "POST",
         headers: {
@@ -34,7 +34,7 @@ export async function login(formData) {
 export async function register(formData) {
   try {
     const response = await fetch(
-      "http://localhost:8080/twirp/auth.AuthService/Register",
+      `https://argus-core.brijesh.dev/twirp/auth.AuthService/Register`,
       {
         method: "POST",
         headers: {

@@ -20,7 +20,7 @@ export default function NewApplicationPage() {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/twirp/applications.ApplicationsService/CreateApplication",
+        `https://argus-core.brijesh.dev/twirp/applications.ApplicationsService/CreateApplication`,
         {
           method: "POST",
           headers: {

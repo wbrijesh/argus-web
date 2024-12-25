@@ -20,7 +20,7 @@ export default function LogsPage() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "http://localhost:8080/twirp/applications.ApplicationsService/ListApplications",
+        `https://argus-core.brijesh.dev/twirp/applications.ApplicationsService/ListApplications`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
